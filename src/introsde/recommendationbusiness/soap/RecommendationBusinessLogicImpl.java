@@ -31,9 +31,18 @@ public class RecommendationBusinessLogicImpl implements RecommendationBusinessLo
 			int aid = resource.getArtistExternalId(name);
 			
 			Preference pref = new Preference();
-			pref.setUserId(String.format("%s", uid));
-			pref.setArtistId(String.format("%s", aid));
-			pref.setArtistName(name);
+			Person pers = resource.getPersonByUser(String.format("%s", uid));
+			if (pers == null) {
+				return;
+			}
+			pref.setUserId(pers);
+			Artist a = resource.getArtistById(String.format("%s", aid));
+			if (a == null) {
+				a = new Artist();
+				a.setId(String.format("%s", aid));
+				a.setName(name);
+			}
+			pref.setArtistId(a);
 			System.out.println("Resource adapter -> addArtist");
 			resource.addArtist(pref);
 		} catch (Exception err) {
@@ -56,9 +65,18 @@ public class RecommendationBusinessLogicImpl implements RecommendationBusinessLo
 			int aid = resource.getArtistExternalId(name);
 			
 			Preference pref = new Preference();
-			pref.setArtistId(String.format("%s", aid));
-			pref.setUserId(String.format("%s", uid));
-			pref.setArtistName(name);
+			Person pers = resource.getPersonByUser(String.format("%s", uid));
+			if (pers == null) {
+				return;
+			}
+			pref.setUserId(pers);
+			Artist a = resource.getArtistById(String.format("%s", aid));
+			if (a == null) {
+				a = new Artist();
+				a.setId(String.format("%s", aid));
+				a.setName(name);
+			}
+			pref.setArtistId(a);
 			resource.removeArtist(pref);
 		} catch (Exception err) {
 			err.printStackTrace();
@@ -155,10 +173,7 @@ public class RecommendationBusinessLogicImpl implements RecommendationBusinessLo
 			System.out.println("PREFERENCES: "+preferences);
 			
 			for (Preference p : preferences) {
-				Artist a = new Artist();
-				a.setId(p.getArtistId());
-				a.setName(p.getArtistName());
-				artists.add(a);
+				artists.add(p.getArtistId());
 			}
 			System.out.println("GetUserArtists");
 			System.out.println(artists.size());
